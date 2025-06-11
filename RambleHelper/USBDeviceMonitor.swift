@@ -62,23 +62,49 @@ class USBDeviceMonitor {
             return
         }
         
-        let volumeName = diskDescription[kDADiskDescriptionVolumeNameKey as String] as? String ?? ""
-        let devicePath = diskDescription[kDADiskDescriptionDevicePathKey as String] as? String ?? ""
-        let mountPath = diskDescription[kDADiskDescriptionVolumePathKey as String] as? URL
+        let volumeName = diskDescription["DAVolumeName"] as? String ?? ""
+        let devicePath = diskDescription["DADevicePath"] as? String ?? ""
+        let bsdName = diskDescription["DAMediaBSDName"] as? String ?? ""
+        let volumeMountable = diskDescription["DAVolumeMountable"] as? Bool ?? false
         
-        print("Disk mounted: \(volumeName) at \(mountPath?.path ?? "unknown")")
+        print("Disk appeared: \(volumeName) (BSD: \(bsdName), Mountable: \(volumeMountable))")
         
-        if isTargetDevice(volumeName: volumeName, devicePath: devicePath) {
-            guard let mountURL = mountPath else {
-                print("No mount path available for device")
-                return
+        // Only process mountable volumes that match our target devices
+        guard volumeMountable && isTargetDevice(volumeName: volumeName, devicePath: devicePath) else {
+            return
+        }
+        
+        print("Target device detected: \(volumeName), waiting for mount...")
+        
+        // Wait a moment and then try to find the mount point
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.findAndProcessMountedDevice(bsdName: bsdName, volumeName: volumeName)
+        }
+    }
+    
+    private func findAndProcessMountedDevice(bsdName: String, volumeName: String) {
+        // Try to find the mount point using the BSD name
+        let volumesURL = URL(fileURLWithPath: "/Volumes")
+        
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(at: volumesURL, includingPropertiesForKeys: [.volumeNameKey], options: [])
+            
+            for volumeURL in contents {
+                // Check if this volume matches our device
+                if let resourceValues = try? volumeURL.resourceValues(forKeys: [.volumeNameKey]),
+                   let mountedVolumeName = resourceValues.volumeName,
+                   mountedVolumeName == volumeName {
+                    
+                    print("Found mounted device at: \(volumeURL.path)")
+                    self.notificationManager.showDeviceDetected()
+                    self.processDevice(at: volumeURL, volumeName: volumeName)
+                    return
+                }
             }
             
-            print("Target device detected: \(volumeName)")
-            DispatchQueue.main.async {
-                self.notificationManager.showDeviceDetected()
-                self.processDevice(at: mountURL, volumeName: volumeName)
-            }
+            print("Could not find mount point for device: \(volumeName)")
+        } catch {
+            print("Error finding mounted volumes: \(error)")
         }
     }
     
@@ -99,6 +125,22 @@ class USBDeviceMonitor {
     private func processDevice(at mountURL: URL, volumeName: String) {
         Task {
             do {
+                // First, check how many WAV files we have
+                let wavFiles = try findWAVFiles(in: mountURL)
+                
+                if wavFiles.isEmpty {
+                    print("No WAV files found on device")
+                    DispatchQueue.main.async {
+                        self.ejectDevice(at: mountURL)
+                    }
+                    return
+                }
+                
+                // Show transfer started notification
+                DispatchQueue.main.async {
+                    self.notificationManager.showTransferStarted(fileCount: wavFiles.count)
+                }
+                
                 let result = try await fileTransferManager.transferFiles(from: mountURL)
                 
                 DispatchQueue.main.async {
@@ -112,6 +154,40 @@ class USBDeviceMonitor {
                 print("Transfer failed: \(error)")
             }
         }
+    }
+    
+    private func findWAVFiles(in directory: URL) throws -> [URL] {
+        let fileManager = FileManager.default
+        let resourceKeys: [URLResourceKey] = [.isRegularFileKey]
+        
+        guard let enumerator = fileManager.enumerator(
+            at: directory,
+            includingPropertiesForKeys: resourceKeys,
+            options: [.skipsHiddenFiles],
+            errorHandler: { url, error in
+                print("Error accessing \(url): \(error)")
+                return true
+            }
+        ) else {
+            return []
+        }
+        
+        var wavFiles: [URL] = []
+        
+        for case let fileURL as URL in enumerator {
+            do {
+                let resourceValues = try fileURL.resourceValues(forKeys: Set(resourceKeys))
+                
+                if resourceValues.isRegularFile == true &&
+                   fileURL.pathExtension.lowercased() == "wav" {
+                    wavFiles.append(fileURL)
+                }
+            } catch {
+                print("Error reading file attributes for \(fileURL): \(error)")
+            }
+        }
+        
+        return wavFiles.sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
     
     private func ejectDevice(at mountURL: URL) {

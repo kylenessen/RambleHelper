@@ -18,8 +18,17 @@ class NotificationManager: NSObject {
     func showDeviceDetected() {
         sendNotification(
             title: "Voice Recorder Detected",
-            body: "Transferring files...",
+            body: "Checking for files...",
             identifier: "device-detected"
+        )
+    }
+    
+    func showTransferStarted(fileCount: Int) {
+        let message = fileCount == 1 ? "Found 1 file. Transfer started..." : "Found \(fileCount) files. Transfer started..."
+        sendNotification(
+            title: "Transfer Started",
+            body: message,
+            identifier: "transfer-started"
         )
     }
     

@@ -65,14 +65,16 @@ class MenuBarController: NSObject {
         let iconName: String
         switch currentState {
         case .idle:
-            iconName = "mic.circle"
+            iconName = "waveform.circle.fill"
         case .working:
-            iconName = "mic.circle.fill"
+            iconName = "waveform.circle.fill"
         case .error:
             iconName = "exclamationmark.triangle"
         }
         
-        statusItem.button?.image = NSImage(systemSymbolName: iconName, accessibilityDescription: nil)
+        let image = NSImage(systemSymbolName: iconName, accessibilityDescription: nil)
+        image?.size = NSSize(width: 22, height: 22)
+        statusItem.button?.image = image
     }
     
     private func createMenu() -> NSMenu {

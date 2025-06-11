@@ -96,7 +96,6 @@ class USBDeviceMonitor {
                    mountedVolumeName == volumeName {
                     
                     print("Found mounted device at: \(volumeURL.path)")
-                    self.notificationManager.showDeviceDetected()
                     self.processDevice(at: volumeURL, volumeName: volumeName)
                     return
                 }

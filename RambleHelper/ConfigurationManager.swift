@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ServiceManagement
 
 class ConfigurationManager: ObservableObject {
     private let userDefaults = UserDefaults.standard
@@ -26,6 +27,7 @@ class ConfigurationManager: ObservableObject {
     @Published var autoLaunch: Bool = true {
         didSet {
             userDefaults.set(autoLaunch, forKey: Keys.autoLaunch)
+            updateLoginItem()
         }
     }
     
@@ -121,5 +123,50 @@ class ConfigurationManager: ObservableObject {
     
     func resetDeviceNames() {
         deviceNames = ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"]
+    }
+    
+    // MARK: - Login Item Management
+    
+    private func updateLoginItem() {
+        if autoLaunch {
+            enableLoginItem()
+        } else {
+            disableLoginItem()
+        }
+    }
+    
+    private func enableLoginItem() {
+        do {
+            if #available(macOS 13.0, *) {
+                try SMAppService.mainApp.register()
+            } else {
+                // Fallback for older macOS versions
+                let bundleIdentifier = Bundle.main.bundleIdentifier ?? "com.Baywood-Labs.RambleHelper"
+                SMLoginItemSetEnabled(bundleIdentifier as CFString, true)
+            }
+        } catch {
+            print("Failed to enable login item: \(error)")
+        }
+    }
+    
+    private func disableLoginItem() {
+        do {
+            if #available(macOS 13.0, *) {
+                try SMAppService.mainApp.unregister()
+            } else {
+                // Fallback for older macOS versions
+                let bundleIdentifier = Bundle.main.bundleIdentifier ?? "com.Baywood-Labs.RambleHelper"
+                SMLoginItemSetEnabled(bundleIdentifier as CFString, false)
+            }
+        } catch {
+            print("Failed to disable login item: \(error)")
+        }
+    }
+    
+    func initializeLoginItem() {
+        // Set up login item on first launch if autoLaunch is enabled
+        if autoLaunch {
+            updateLoginItem()
+        }
     }
 }

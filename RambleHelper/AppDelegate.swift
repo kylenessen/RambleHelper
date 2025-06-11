@@ -48,6 +48,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         
         usbDeviceMonitor?.startMonitoring()
+        
+        // Initialize login item settings
+        configurationManager?.initializeLoginItem()
     }
     
     private func requestNotificationPermissions() {

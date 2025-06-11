@@ -1,0 +1,556 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		4E6DDC022DF91AD2000D4062 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E6DDBEB2DF91AD1000D4062 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4E6DDBF22DF91AD1000D4062;
+			remoteInfo = RambleHelper;
+		};
+		4E6DDC0C2DF91AD2000D4062 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E6DDBEB2DF91AD1000D4062 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4E6DDBF22DF91AD1000D4062;
+			remoteInfo = RambleHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4E6DDBF32DF91AD1000D4062 /* RambleHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RambleHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E6DDC012DF91AD2000D4062 /* RambleHelperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RambleHelperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E6DDC0B2DF91AD2000D4062 /* RambleHelperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RambleHelperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		4E6DDBF52DF91AD1000D4062 /* RambleHelper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RambleHelper;
+			sourceTree = "<group>";
+		};
+		4E6DDC042DF91AD2000D4062 /* RambleHelperTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RambleHelperTests;
+			sourceTree = "<group>";
+		};
+		4E6DDC0E2DF91AD2000D4062 /* RambleHelperUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RambleHelperUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4E6DDBF02DF91AD1000D4062 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E6DDBFE2DF91AD2000D4062 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E6DDC082DF91AD2000D4062 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4E6DDBEA2DF91AD1000D4062 = {
+			isa = PBXGroup;
+			children = (
+				4E6DDBF52DF91AD1000D4062 /* RambleHelper */,
+				4E6DDC042DF91AD2000D4062 /* RambleHelperTests */,
+				4E6DDC0E2DF91AD2000D4062 /* RambleHelperUITests */,
+				4E6DDBF42DF91AD1000D4062 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4E6DDBF42DF91AD1000D4062 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4E6DDBF32DF91AD1000D4062 /* RambleHelper.app */,
+				4E6DDC012DF91AD2000D4062 /* RambleHelperTests.xctest */,
+				4E6DDC0B2DF91AD2000D4062 /* RambleHelperUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4E6DDBF22DF91AD1000D4062 /* RambleHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E6DDC152DF91AD2000D4062 /* Build configuration list for PBXNativeTarget "RambleHelper" */;
+			buildPhases = (
+				4E6DDBEF2DF91AD1000D4062 /* Sources */,
+				4E6DDBF02DF91AD1000D4062 /* Frameworks */,
+				4E6DDBF12DF91AD1000D4062 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4E6DDBF52DF91AD1000D4062 /* RambleHelper */,
+			);
+			name = RambleHelper;
+			packageProductDependencies = (
+			);
+			productName = RambleHelper;
+			productReference = 4E6DDBF32DF91AD1000D4062 /* RambleHelper.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4E6DDC002DF91AD2000D4062 /* RambleHelperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E6DDC182DF91AD2000D4062 /* Build configuration list for PBXNativeTarget "RambleHelperTests" */;
+			buildPhases = (
+				4E6DDBFD2DF91AD2000D4062 /* Sources */,
+				4E6DDBFE2DF91AD2000D4062 /* Frameworks */,
+				4E6DDBFF2DF91AD2000D4062 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4E6DDC032DF91AD2000D4062 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4E6DDC042DF91AD2000D4062 /* RambleHelperTests */,
+			);
+			name = RambleHelperTests;
+			packageProductDependencies = (
+			);
+			productName = RambleHelperTests;
+			productReference = 4E6DDC012DF91AD2000D4062 /* RambleHelperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		4E6DDC0A2DF91AD2000D4062 /* RambleHelperUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E6DDC1B2DF91AD2000D4062 /* Build configuration list for PBXNativeTarget "RambleHelperUITests" */;
+			buildPhases = (
+				4E6DDC072DF91AD2000D4062 /* Sources */,
+				4E6DDC082DF91AD2000D4062 /* Frameworks */,
+				4E6DDC092DF91AD2000D4062 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4E6DDC0D2DF91AD2000D4062 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4E6DDC0E2DF91AD2000D4062 /* RambleHelperUITests */,
+			);
+			name = RambleHelperUITests;
+			packageProductDependencies = (
+			);
+			productName = RambleHelperUITests;
+			productReference = 4E6DDC0B2DF91AD2000D4062 /* RambleHelperUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4E6DDBEB2DF91AD1000D4062 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					4E6DDBF22DF91AD1000D4062 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					4E6DDC002DF91AD2000D4062 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 4E6DDBF22DF91AD1000D4062;
+					};
+					4E6DDC0A2DF91AD2000D4062 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 4E6DDBF22DF91AD1000D4062;
+					};
+				};
+			};
+			buildConfigurationList = 4E6DDBEE2DF91AD1000D4062 /* Build configuration list for PBXProject "RambleHelper" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4E6DDBEA2DF91AD1000D4062;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4E6DDBF42DF91AD1000D4062 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4E6DDBF22DF91AD1000D4062 /* RambleHelper */,
+				4E6DDC002DF91AD2000D4062 /* RambleHelperTests */,
+				4E6DDC0A2DF91AD2000D4062 /* RambleHelperUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4E6DDBF12DF91AD1000D4062 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E6DDBFF2DF91AD2000D4062 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E6DDC092DF91AD2000D4062 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4E6DDBEF2DF91AD1000D4062 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E6DDBFD2DF91AD2000D4062 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E6DDC072DF91AD2000D4062 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4E6DDC032DF91AD2000D4062 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4E6DDBF22DF91AD1000D4062 /* RambleHelper */;
+			targetProxy = 4E6DDC022DF91AD2000D4062 /* PBXContainerItemProxy */;
+		};
+		4E6DDC0D2DF91AD2000D4062 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4E6DDBF22DF91AD1000D4062 /* RambleHelper */;
+			targetProxy = 4E6DDC0C2DF91AD2000D4062 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4E6DDC132DF91AD2000D4062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4E6DDC142DF91AD2000D4062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		4E6DDC162DF91AD2000D4062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RambleHelper/RambleHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Baywood-Labs.RambleHelper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4E6DDC172DF91AD2000D4062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RambleHelper/RambleHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Baywood-Labs.RambleHelper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4E6DDC192DF91AD2000D4062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Baywood-Labs.RambleHelperTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RambleHelper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RambleHelper";
+			};
+			name = Debug;
+		};
+		4E6DDC1A2DF91AD2000D4062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Baywood-Labs.RambleHelperTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RambleHelper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RambleHelper";
+			};
+			name = Release;
+		};
+		4E6DDC1C2DF91AD2000D4062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Baywood-Labs.RambleHelperUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = RambleHelper;
+			};
+			name = Debug;
+		};
+		4E6DDC1D2DF91AD2000D4062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R9LUBQAD88;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Baywood-Labs.RambleHelperUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = RambleHelper;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4E6DDBEE2DF91AD1000D4062 /* Build configuration list for PBXProject "RambleHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E6DDC132DF91AD2000D4062 /* Debug */,
+				4E6DDC142DF91AD2000D4062 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4E6DDC152DF91AD2000D4062 /* Build configuration list for PBXNativeTarget "RambleHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E6DDC162DF91AD2000D4062 /* Debug */,
+				4E6DDC172DF91AD2000D4062 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4E6DDC182DF91AD2000D4062 /* Build configuration list for PBXNativeTarget "RambleHelperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E6DDC192DF91AD2000D4062 /* Debug */,
+				4E6DDC1A2DF91AD2000D4062 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4E6DDC1B2DF91AD2000D4062 /* Build configuration list for PBXNativeTarget "RambleHelperUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E6DDC1C2DF91AD2000D4062 /* Debug */,
+				4E6DDC1D2DF91AD2000D4062 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4E6DDBEB2DF91AD1000D4062 /* Project object */;
+}

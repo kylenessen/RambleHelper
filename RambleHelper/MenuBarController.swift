@@ -19,6 +19,7 @@ class MenuBarController: NSObject {
     private var configurationManager: ConfigurationManager?
     private var usbDeviceMonitor: USBDeviceMonitor?
     private var fileTransferManager: FileTransferManager?
+    private var deviceNamesWindow: NSWindow?
     
     private var currentState: AppState = .idle {
         didSet {
@@ -95,6 +96,12 @@ class MenuBarController: NSObject {
             keyEquivalent: ""
         ))
         
+        menu.addItem(NSMenuItem(
+            title: "Configure Device Names",
+            action: #selector(configureDeviceNames),
+            keyEquivalent: ""
+        ))
+        
         menu.addItem(NSMenuItem.separator())
         
         menu.addItem(NSMenuItem(
@@ -152,6 +159,33 @@ class MenuBarController: NSObject {
         }
     }
     
+    @objc private func configureDeviceNames() {
+        // Only allow one window at a time
+        if deviceNamesWindow != nil {
+            deviceNamesWindow?.makeKeyAndOrderFront(nil)
+            return
+        }
+        
+        let deviceNamesViewController = DeviceNamesViewController(configurationManager: configurationManager!)
+        
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 350),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Configure Device Names"
+        window.contentViewController = deviceNamesViewController
+        window.delegate = self
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        window.isReleasedWhenClosed = false
+        NSApp.activate(ignoringOtherApps: true)
+        
+        // Keep strong reference to window
+        deviceNamesWindow = window
+    }
+    
     @objc private func viewLogs() {
         let logsURL = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?
             .appendingPathComponent("Logs/RambleHelper")
@@ -167,5 +201,13 @@ class MenuBarController: NSObject {
     
     func updateMenu() {
         statusItem.menu = createMenu()
+    }
+}
+
+extension MenuBarController: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        if let window = notification.object as? NSWindow, window == deviceNamesWindow {
+            deviceNamesWindow = nil
+        }
     }
 }

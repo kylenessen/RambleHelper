@@ -14,6 +14,7 @@ class ConfigurationManager: ObservableObject {
         static let destinationFolderBookmark = "destinationFolderBookmark"
         static let autoLaunch = "autoLaunch"
         static let deviceIdentifier = "deviceIdentifier"
+        static let deviceNames = "deviceNames"
     }
     
     @Published var destinationFolderURL: URL? {
@@ -34,6 +35,12 @@ class ConfigurationManager: ObservableObject {
         }
     }
     
+    @Published var deviceNames: [String] = ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"] {
+        didSet {
+            userDefaults.set(deviceNames, forKey: Keys.deviceNames)
+        }
+    }
+    
     init() {
         loadConfiguration()
     }
@@ -42,6 +49,7 @@ class ConfigurationManager: ObservableObject {
         loadDestinationFolder()
         autoLaunch = userDefaults.bool(forKey: Keys.autoLaunch)
         deviceIdentifier = userDefaults.string(forKey: Keys.deviceIdentifier) ?? "DJI"
+        deviceNames = userDefaults.stringArray(forKey: Keys.deviceNames) ?? ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"]
         
         if destinationFolderURL == nil {
             setDefaultDestinationFolder()
@@ -99,5 +107,19 @@ class ConfigurationManager: ObservableObject {
     
     var isConfigured: Bool {
         return destinationFolderURL != nil
+    }
+    
+    func addDeviceName(_ name: String) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty && !deviceNames.contains(trimmedName.uppercased()) else { return }
+        deviceNames.append(trimmedName.uppercased())
+    }
+    
+    func removeDeviceName(_ name: String) {
+        deviceNames.removeAll { $0.uppercased() == name.uppercased() }
+    }
+    
+    func resetDeviceNames() {
+        deviceNames = ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"]
     }
 }

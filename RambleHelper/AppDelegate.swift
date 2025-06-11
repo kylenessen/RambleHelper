@@ -37,7 +37,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         usbDeviceMonitor = USBDeviceMonitor(
             fileTransferManager: fileTransferManager!,
-            notificationManager: notificationManager!
+            notificationManager: notificationManager!,
+            configurationManager: configurationManager!
         )
         
         menuBarController?.configure(

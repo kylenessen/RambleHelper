@@ -14,12 +14,14 @@ import AppKit
 class USBDeviceMonitor {
     private let fileTransferManager: FileTransferManager
     private let notificationManager: NotificationManager
+    private let configurationManager: ConfigurationManager
     private var session: DASession?
     private var isMonitoring = false
     
-    init(fileTransferManager: FileTransferManager, notificationManager: NotificationManager) {
+    init(fileTransferManager: FileTransferManager, notificationManager: NotificationManager, configurationManager: ConfigurationManager) {
         self.fileTransferManager = fileTransferManager
         self.notificationManager = notificationManager
+        self.configurationManager = configurationManager
     }
     
     func startMonitoring() {
@@ -81,14 +83,14 @@ class USBDeviceMonitor {
     }
     
     private func isTargetDevice(volumeName: String, devicePath: String) -> Bool {
-        let targetNames = ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"]
+        let targetNames = configurationManager.deviceNames
         
         let nameMatch = targetNames.contains { target in
-            volumeName.uppercased().contains(target)
+            volumeName.uppercased().contains(target.uppercased())
         }
         
         let pathMatch = targetNames.contains { target in
-            devicePath.uppercased().contains(target)
+            devicePath.uppercased().contains(target.uppercased())
         }
         
         return nameMatch || pathMatch

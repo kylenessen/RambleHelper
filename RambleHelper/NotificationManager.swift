@@ -41,6 +41,49 @@ class NotificationManager: NSObject {
         )
     }
     
+    func showProcessingStarted(fileCount: Int) {
+        let message = fileCount == 1 ? "Processing 1 audio file..." : "Processing \(fileCount) audio files..."
+        sendNotification(
+            title: "Audio Processing Started",
+            body: message,
+            identifier: "processing-started"
+        )
+    }
+    
+    func showProcessingComplete(result: TransferResult) {
+        var messages: [String] = []
+        
+        if result.processedCount > 0 {
+            messages.append("\(result.processedCount) files processed")
+        }
+        
+        if result.mergedCount > 0 {
+            messages.append("\(result.mergedCount) files merged")
+        }
+        
+        if result.deletedSmallCount > 0 {
+            messages.append("\(result.deletedSmallCount) small files deleted")
+        }
+        
+        let message = messages.isEmpty ? "Processing complete. Device ejected." : "\(messages.joined(separator: ", ")). Device ejected."
+        
+        sendNotification(
+            title: "Processing Complete",
+            body: message,
+            identifier: "processing-complete"
+        )
+    }
+    
+    func showMergeComplete(mergedFiles: Int, totalDuration: TimeInterval) {
+        let durationString = String(format: "%.1f", totalDuration / 60.0) // minutes
+        let message = "Merged \(mergedFiles) recordings into 1 file (\(durationString) min total)"
+        sendNotification(
+            title: "Audio Merge Complete",
+            body: message,
+            identifier: "merge-complete"
+        )
+    }
+    
     func showTransferError(_ message: String) {
         sendNotification(
             title: "Transfer Failed",

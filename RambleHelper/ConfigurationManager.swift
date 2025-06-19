@@ -16,6 +16,10 @@ class ConfigurationManager: ObservableObject {
         static let autoLaunch = "autoLaunch"
         static let deviceIdentifier = "deviceIdentifier"
         static let deviceNames = "deviceNames"
+        static let enableAudioMerging = "enableAudioMerging"
+        static let enableSmallFileDeletion = "enableSmallFileDeletion"
+        static let smallFileThreshold = "smallFileThreshold"
+        static let outputFormat = "outputFormat"
     }
     
     @Published var destinationFolderURL: URL? {
@@ -43,6 +47,30 @@ class ConfigurationManager: ObservableObject {
         }
     }
     
+    @Published var enableAudioMerging: Bool = true {
+        didSet {
+            userDefaults.set(enableAudioMerging, forKey: Keys.enableAudioMerging)
+        }
+    }
+    
+    @Published var enableSmallFileDeletion: Bool = true {
+        didSet {
+            userDefaults.set(enableSmallFileDeletion, forKey: Keys.enableSmallFileDeletion)
+        }
+    }
+    
+    @Published var smallFileThreshold: Int64 = 5 * 1024 * 1024 { // 5MB default
+        didSet {
+            userDefaults.set(smallFileThreshold, forKey: Keys.smallFileThreshold)
+        }
+    }
+    
+    @Published var outputFormat: String = "m4a" { // "wav" or "m4a"
+        didSet {
+            userDefaults.set(outputFormat, forKey: Keys.outputFormat)
+        }
+    }
+    
     init() {
         loadConfiguration()
     }
@@ -52,6 +80,12 @@ class ConfigurationManager: ObservableObject {
         autoLaunch = userDefaults.bool(forKey: Keys.autoLaunch)
         deviceIdentifier = userDefaults.string(forKey: Keys.deviceIdentifier) ?? "DJI"
         deviceNames = userDefaults.stringArray(forKey: Keys.deviceNames) ?? ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"]
+        
+        // Load audio processing settings
+        enableAudioMerging = userDefaults.object(forKey: Keys.enableAudioMerging) as? Bool ?? true
+        enableSmallFileDeletion = userDefaults.object(forKey: Keys.enableSmallFileDeletion) as? Bool ?? true
+        smallFileThreshold = userDefaults.object(forKey: Keys.smallFileThreshold) as? Int64 ?? (5 * 1024 * 1024)
+        outputFormat = userDefaults.string(forKey: Keys.outputFormat) ?? "m4a"
         
         if destinationFolderURL == nil {
             setDefaultDestinationFolder()
@@ -123,6 +157,27 @@ class ConfigurationManager: ObservableObject {
     
     func resetDeviceNames() {
         deviceNames = ["DJI", "RODE", "ZOOM", "MIC", "RECORDER"]
+    }
+    
+    // MARK: - Audio Processing Settings
+    
+    func setSmallFileThresholdMB(_ megabytes: Int) {
+        smallFileThreshold = Int64(megabytes) * 1024 * 1024
+    }
+    
+    func getSmallFileThresholdMB() -> Int {
+        return Int(smallFileThreshold / (1024 * 1024))
+    }
+    
+    func resetAudioProcessingSettings() {
+        enableAudioMerging = true
+        enableSmallFileDeletion = true
+        smallFileThreshold = 5 * 1024 * 1024 // 5MB
+        outputFormat = "m4a"
+    }
+    
+    var isAudioProcessingEnabled: Bool {
+        return enableAudioMerging || enableSmallFileDeletion
     }
     
     // MARK: - Login Item Management

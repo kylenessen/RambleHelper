@@ -10,11 +10,15 @@ import Foundation
 enum TransferState {
     case idle
     case transferring
+    case processing
     case error
 }
 
 struct TransferResult {
     let transferredCount: Int
+    let processedCount: Int
+    let mergedCount: Int
+    let deletedSmallCount: Int
     let skippedCount: Int
     let errorCount: Int
 }
@@ -49,6 +53,7 @@ class FileTransferManager {
     private let configurationManager: ConfigurationManager
     private let notificationManager: NotificationManager
     private let logger: Logger
+    private let audioProcessor: AudioFileProcessor
     
     private(set) var currentState: TransferState = .idle {
         didSet {
@@ -62,6 +67,12 @@ class FileTransferManager {
         self.configurationManager = configurationManager
         self.notificationManager = notificationManager
         self.logger = Logger.shared
+        self.audioProcessor = AudioFileProcessor()
+        
+        // Set up progress callback for audio processing
+        self.audioProcessor.onProgress = { [weak self] message, progress in
+            self?.logger.log("Audio processing: \(message) (\(Int(progress * 100))%)")
+        }
     }
     
     func transferFiles(from sourceURL: URL) async throws -> TransferResult {
@@ -81,31 +92,101 @@ class FileTransferManager {
         logger.log("Found \(wavFiles.count) WAV files")
         
         if wavFiles.isEmpty {
-            return TransferResult(transferredCount: 0, skippedCount: 0, errorCount: 0)
+            return TransferResult(
+                transferredCount: 0,
+                processedCount: 0,
+                mergedCount: 0,
+                deletedSmallCount: 0,
+                skippedCount: 0,
+                errorCount: 0
+            )
         }
         
         try checkAvailableSpace(for: wavFiles, destination: destinationURL)
         
+        // Step 1: Transfer files to a temporary processing directory
+        let tempProcessingDir = destinationURL.appendingPathComponent(".ramble_processing_\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: tempProcessingDir, withIntermediateDirectories: true)
+        
+        var transferredFiles: [URL] = []
         var transferredCount = 0
-        var skippedCount = 0
         var errorCount = 0
         
+        defer {
+            // Clean up temp directory
+            try? FileManager.default.removeItem(at: tempProcessingDir)
+        }
+        
+        // Transfer files to temp directory
         for sourceFile in wavFiles {
             do {
-                let success = try await transferFile(from: sourceFile, to: destinationURL)
-                if success {
-                    transferredCount += 1
-                } else {
-                    skippedCount += 1
-                }
+                let tempDestination = tempProcessingDir.appendingPathComponent(sourceFile.lastPathComponent)
+                try FileManager.default.copyItem(at: sourceFile, to: tempDestination)
+                transferredFiles.append(tempDestination)
+                transferredCount += 1
             } catch {
                 logger.log("Failed to transfer \(sourceFile.lastPathComponent): \(error)", level: .error)
                 errorCount += 1
             }
         }
         
-        logger.log("Transfer complete: \(transferredCount) transferred, \(skippedCount) skipped, \(errorCount) errors")
-        return TransferResult(transferredCount: transferredCount, skippedCount: skippedCount, errorCount: errorCount)
+        // Step 2: Process audio files (merge, convert, filter)
+        currentState = .processing
+        
+        var processedCount = 0
+        var mergedCount = 0
+        var deletedSmallCount = 0
+        var skippedCount = 0
+        
+        if !transferredFiles.isEmpty {
+            do {
+                let processingOptions = AudioProcessingOptions(
+                    enableMerging: configurationManager.enableAudioMerging,
+                    enableSmallFileDeletion: configurationManager.enableSmallFileDeletion,
+                    smallFileThreshold: configurationManager.smallFileThreshold,
+                    outputFormat: configurationManager.outputFormat == "wav" ? .wav : .m4a,
+                    preserveOriginals: false
+                )
+                
+                let processingResult = try await audioProcessor.processAudioFiles(
+                    files: transferredFiles,
+                    destinationFolder: destinationURL,
+                    options: processingOptions
+                )
+                
+                processedCount = processingResult.processedFiles.count
+                mergedCount = processingResult.mergedFiles.count
+                deletedSmallCount = processingResult.deletedSmallFiles.count
+                skippedCount = processingResult.skippedFiles.count
+                
+                logger.log("Audio processing complete: \(processedCount) processed, \(mergedCount) merged, \(deletedSmallCount) small files deleted")
+                
+            } catch {
+                logger.log("Audio processing failed: \(error)", level: .error)
+                // Fall back to simple file copy for unprocessed files
+                for file in transferredFiles {
+                    let destination = getUniqueDestinationURL(for: file.lastPathComponent, in: destinationURL)
+                    try? FileManager.default.moveItem(at: file, to: destination)
+                }
+                errorCount += 1
+            }
+        }
+        
+        // Step 3: Clean up original files from device
+        for sourceFile in wavFiles {
+            try? FileManager.default.removeItem(at: sourceFile)
+        }
+        
+        logger.log("Transfer and processing complete: \(transferredCount) transferred, \(processedCount) processed, \(mergedCount) merged, \(deletedSmallCount) small files deleted, \(skippedCount) skipped, \(errorCount) errors")
+        
+        return TransferResult(
+            transferredCount: transferredCount,
+            processedCount: processedCount,
+            mergedCount: mergedCount,
+            deletedSmallCount: deletedSmallCount,
+            skippedCount: skippedCount,
+            errorCount: errorCount
+        )
     }
     
     private func findWAVFiles(in directory: URL) throws -> [URL] {
@@ -175,8 +256,6 @@ class FileTransferManager {
             try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
             
             try await verifyTransfer(source: sourceURL, destination: destinationURL)
-            
-            try FileManager.default.removeItem(at: sourceURL)
             
             logger.log("Successfully transferred: \(fileName)")
             return true

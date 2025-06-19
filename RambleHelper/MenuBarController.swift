@@ -49,6 +49,8 @@ class MenuBarController: NSObject {
                     self?.currentState = .idle
                 case .transferring:
                     self?.currentState = .working
+                case .processing:
+                    self?.currentState = .working
                 case .error:
                     self?.currentState = .error
                 }
@@ -104,6 +106,12 @@ class MenuBarController: NSObject {
             keyEquivalent: ""
         ))
         
+        menu.addItem(NSMenuItem(
+            title: "Audio Processing Settings",
+            action: #selector(configureAudioProcessing),
+            keyEquivalent: ""
+        ))
+        
         menu.addItem(NSMenuItem.separator())
         
         menu.addItem(NSMenuItem(
@@ -128,11 +136,16 @@ class MenuBarController: NSObject {
     }
     
     private func getStatusText() -> String {
+        guard let configManager = configurationManager else {
+            return "Starting..."
+        }
+        
         switch currentState {
         case .idle:
-            return "Waiting for voice recorder..."
+            let processingStatus = configManager.isAudioProcessingEnabled ? " (Processing enabled)" : ""
+            return "Waiting for voice recorder...\(processingStatus)"
         case .working:
-            return "Transferring files..."
+            return "Processing files..."
         case .error:
             return "Error - Check logs"
         }
@@ -186,6 +199,90 @@ class MenuBarController: NSObject {
         
         // Keep strong reference to window
         deviceNamesWindow = window
+    }
+    
+    @objc private func configureAudioProcessing() {
+        guard let configManager = configurationManager else { return }
+        
+        let alert = NSAlert()
+        alert.messageText = "Audio Processing Settings"
+        alert.informativeText = "Configure automatic audio processing options"
+        alert.alertStyle = .informational
+        
+        // Create accessory view with checkboxes and controls
+        let view = NSStackView()
+        view.orientation = .vertical
+        view.spacing = 10
+        view.alignment = .leading
+        
+        // Audio merging checkbox
+        let mergingCheckbox = NSButton()
+        mergingCheckbox.setButtonType(.switch)
+        mergingCheckbox.title = "Enable automatic file merging (DJI Mic 30min+ recordings)"
+        mergingCheckbox.state = configManager.enableAudioMerging ? .on : .off
+        view.addArrangedSubview(mergingCheckbox)
+        
+        // Small file deletion checkbox
+        let smallFileCheckbox = NSButton()
+        smallFileCheckbox.setButtonType(.switch)
+        smallFileCheckbox.title = "Automatically delete small files"
+        smallFileCheckbox.state = configManager.enableSmallFileDeletion ? .on : .off
+        view.addArrangedSubview(smallFileCheckbox)
+        
+        // Small file threshold
+        let thresholdContainer = NSStackView()
+        thresholdContainer.orientation = .horizontal
+        thresholdContainer.spacing = 5
+        
+        let thresholdLabel = NSTextField(labelWithString: "Size threshold (MB):")
+        let thresholdField = NSTextField()
+        thresholdField.stringValue = "\(configManager.getSmallFileThresholdMB())"
+        thresholdField.preferredMaxLayoutWidth = 50
+        
+        thresholdContainer.addArrangedSubview(thresholdLabel)
+        thresholdContainer.addArrangedSubview(thresholdField)
+        view.addArrangedSubview(thresholdContainer)
+        
+        // Output format selection
+        let formatContainer = NSStackView()
+        formatContainer.orientation = .horizontal
+        formatContainer.spacing = 5
+        
+        let formatLabel = NSTextField(labelWithString: "Output format:")
+        let formatPopup = NSPopUpButton()
+        formatPopup.addItems(withTitles: ["M4A (compressed)", "WAV (uncompressed)"])
+        formatPopup.selectItem(at: configManager.outputFormat == "m4a" ? 0 : 1)
+        
+        formatContainer.addArrangedSubview(formatLabel)
+        formatContainer.addArrangedSubview(formatPopup)
+        view.addArrangedSubview(formatContainer)
+        
+        alert.accessoryView = view
+        alert.addButton(withTitle: "Save")
+        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: "Reset to Defaults")
+        
+        let response = alert.runModal()
+        
+        switch response {
+        case .alertFirstButtonReturn: // Save
+            configManager.enableAudioMerging = mergingCheckbox.state == .on
+            configManager.enableSmallFileDeletion = smallFileCheckbox.state == .on
+            
+            if let threshold = Int(thresholdField.stringValue), threshold > 0 {
+                configManager.setSmallFileThresholdMB(threshold)
+            }
+            
+            configManager.outputFormat = formatPopup.indexOfSelectedItem == 0 ? "m4a" : "wav"
+            
+        case .alertThirdButtonReturn: // Reset to Defaults
+            configManager.resetAudioProcessingSettings()
+            
+        default: // Cancel
+            break
+        }
+        
+        updateMenu()
     }
     
     @objc private func viewLogs() {

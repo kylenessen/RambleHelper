@@ -143,7 +143,7 @@ class USBDeviceMonitor {
                 let result = try await fileTransferManager.transferFiles(from: mountURL)
                 
                 DispatchQueue.main.async {
-                    self.notificationManager.showTransferSuccess(fileCount: result.transferredCount)
+                    self.notificationManager.showProcessingComplete(result: result)
                     self.ejectDevice(at: mountURL)
                 }
             } catch {

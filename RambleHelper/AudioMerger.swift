@@ -80,6 +80,21 @@ class AudioMerger {
         self.logger = Logger.shared
     }
     
+    /// Configures audio processing environment for macOS
+    private func configureAudioProcessing() throws {
+        // On macOS, AVFoundation doesn't require explicit audio session configuration
+        // like iOS does. The audio processing capabilities are handled automatically.
+        // We mainly need to ensure proper error handling and resource management.
+        logger.log("Audio processing environment configured for macOS")
+    }
+    
+    /// Cleanup audio processing resources
+    private func cleanupAudioProcessing() {
+        // On macOS, cleanup is handled automatically by AVFoundation
+        // We just log for debugging purposes
+        logger.log("Audio processing cleanup completed")
+    }
+    
     /// Merges multiple audio files into a single output file
     /// - Parameters:
     ///   - inputFiles: Array of URLs to audio files to merge
@@ -94,6 +109,14 @@ class AudioMerger {
         
         guard !inputFiles.isEmpty else {
             throw AudioMergerError.noInputFiles
+        }
+        
+        // Configure audio processing environment
+        try configureAudioProcessing()
+        
+        defer {
+            // Cleanup audio processing resources
+            cleanupAudioProcessing()
         }
         
         logger.log("Starting audio merge: \(inputFiles.count) files -> \(outputURL.lastPathComponent)")
@@ -128,7 +151,7 @@ class AudioMerger {
         
         // Add each input file to the composition
         for inputURL in inputFiles {
-            let asset = AVAsset(url: inputURL)
+            let asset = AVURLAsset(url: inputURL)
             
             // Wait for asset to load
             let duration = try await asset.load(.duration)
@@ -172,7 +195,7 @@ class AudioMerger {
         outputFormat: AudioFormat
     ) async throws -> TimeInterval {
         
-        let asset = AVAsset(url: inputURL)
+        let asset = AVURLAsset(url: inputURL)
         let duration = try await asset.load(.duration)
         
         // If input is already in the desired format and no conversion needed, just copy
@@ -182,7 +205,7 @@ class AudioMerger {
             return duration.seconds
         }
         
-        // Otherwise, export with format conversion
+        // Otherwise, export with format conversion using modern API
         guard let exportSession = AVAssetExportSession(
             asset: asset,
             presetName: AVAssetExportPresetAppleM4A
@@ -193,55 +216,52 @@ class AudioMerger {
         exportSession.outputURL = outputURL
         exportSession.outputFileType = outputFormat.avFileType
         
-        await exportSession.export()
-        
-        switch exportSession.status {
-        case .completed:
+        do {
+            try await exportSession.export(to: outputURL, as: outputFormat.avFileType)
             logger.log("Converted \(inputURL.lastPathComponent) to \(outputFormat.fileExtension)")
             return duration.seconds
-        case .failed:
-            let error = exportSession.error?.localizedDescription ?? "Unknown error"
-            throw AudioMergerError.exportFailed(error)
-        case .cancelled:
-            throw AudioMergerError.exportFailed("Export was cancelled")
-        default:
-            throw AudioMergerError.exportFailed("Export failed with status: \(exportSession.status.rawValue)")
+        } catch {
+            throw AudioMergerError.exportFailed("Export failed: \(error.localizedDescription)")
         }
     }
     
-    /// Exports an AVComposition to the specified output URL and format
+    /// Exports an AVComposition to the specified output URL and format with retry logic
     private func exportComposition(
         _ composition: AVMutableComposition,
         to outputURL: URL,
         outputFormat: AudioFormat
     ) async throws {
         
-        guard let exportSession = AVAssetExportSession(
-            asset: composition,
-            presetName: AVAssetExportPresetAppleM4A
-        ) else {
-            throw AudioMergerError.exportFailed("Failed to create export session")
+        let maxRetries = 2
+        var lastError: Error?
+        
+        for attempt in 1...maxRetries {
+            guard let exportSession = AVAssetExportSession(
+                asset: composition,
+                presetName: AVAssetExportPresetAppleM4A
+            ) else {
+                throw AudioMergerError.exportFailed("Failed to create export session")
+            }
+            
+            do {
+                try await exportSession.export(to: outputURL, as: outputFormat.avFileType)
+                logger.log("Successfully exported merged audio to \(outputURL.lastPathComponent) (attempt \(attempt))")
+                return
+            } catch {
+                lastError = error
+                logger.log("Export failed (attempt \(attempt)/\(maxRetries)): \(error)", level: .warning)
+                
+                if attempt < maxRetries {
+                    // Clean up failed output file before retry
+                    try? FileManager.default.removeItem(at: outputURL)
+                    // Brief delay before retry
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+                }
+            }
         }
         
-        exportSession.outputURL = outputURL
-        exportSession.outputFileType = outputFormat.avFileType
-        
-        // Note: audioSettings is not available on AVAssetExportSession
-        // Quality is controlled by the preset used (AVAssetExportPresetAppleM4A)
-        
-        await exportSession.export()
-        
-        switch exportSession.status {
-        case .completed:
-            logger.log("Successfully exported merged audio to \(outputURL.lastPathComponent)")
-        case .failed:
-            let error = exportSession.error?.localizedDescription ?? "Unknown error"
-            throw AudioMergerError.exportFailed(error)
-        case .cancelled:
-            throw AudioMergerError.exportFailed("Export was cancelled")
-        default:
-            throw AudioMergerError.exportFailed("Export failed with status: \(exportSession.status.rawValue)")
-        }
+        // All retries failed
+        throw AudioMergerError.exportFailed("Export failed after \(maxRetries) attempts: \(lastError?.localizedDescription ?? "Unknown error")")
     }
     
     /// Validates that audio files have compatible formats for merging
@@ -253,7 +273,7 @@ class AudioMerger {
         var commonFormat: CMFormatDescription?
         
         for file in files {
-            let asset = AVAsset(url: file)
+            let asset = AVURLAsset(url: file)
             let tracks = try await asset.loadTracks(withMediaType: .audio)
             
             guard let track = tracks.first else {
@@ -276,14 +296,14 @@ class AudioMerger {
     
     /// Gets the duration of an audio file
     func getAudioDuration(url: URL) async throws -> TimeInterval {
-        let asset = AVAsset(url: url)
+        let asset = AVURLAsset(url: url)
         let duration = try await asset.load(.duration)
         return duration.seconds
     }
     
     /// Checks if a file is a valid audio file
     func isValidAudioFile(url: URL) async -> Bool {
-        let asset = AVAsset(url: url)
+        let asset = AVURLAsset(url: url)
         
         do {
             let tracks = try await asset.loadTracks(withMediaType: .audio)

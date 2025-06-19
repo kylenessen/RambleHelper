@@ -193,7 +193,20 @@ class AudioFileProcessor {
     ) async throws -> [URL] {
         
         let outputFileName = group.generateOutputFileName(withExtension: options.outputFormat.fileExtension)
-        let outputURL = destinationFolder.appendingPathComponent(outputFileName)
+        let finalOutputURL = destinationFolder.appendingPathComponent(outputFileName)
+        
+        logger.log("Processing file to destination: \(finalOutputURL.path)")
+        
+        // Create unique temp processing directory for AVAssetExportSession
+        let systemTempDir = FileManager.default.temporaryDirectory
+        let tempProcessingDir = systemTempDir.appendingPathComponent("audio_processing_\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: tempProcessingDir, withIntermediateDirectories: true)
+        let tempOutputURL = tempProcessingDir.appendingPathComponent(outputFileName)
+        
+        defer {
+            // Clean up temp directory
+            try? FileManager.default.removeItem(at: tempProcessingDir)
+        }
         
         if group.shouldMerge && options.enableMerging {
             // Merge multiple files
@@ -202,14 +215,20 @@ class AudioFileProcessor {
             // Validate files can be merged
             try await audioMerger.validateAudioFiles(group.files)
             
-            // Perform the merge
+            // Perform the merge to temp directory
             let duration = try await audioMerger.mergeAudioFiles(
                 inputFiles: group.files,
-                outputURL: outputURL,
+                outputURL: tempOutputURL,
                 outputFormat: options.outputFormat
             )
             
             logger.log("Successfully merged \(group.files.count) files (duration: \(String(format: "%.1f", duration))s)")
+            
+            // Copy from temp to final destination, then remove temp file
+            logger.log("Copying merged file from \(tempOutputURL.path) to \(finalOutputURL.path)")
+            try FileManager.default.copyItem(at: tempOutputURL, to: finalOutputURL)
+            try FileManager.default.removeItem(at: tempOutputURL)
+            logger.log("Successfully saved merged file to: \(finalOutputURL.path)")
             
             // Remove original files if not preserving
             if !options.preserveOriginals {
@@ -218,7 +237,7 @@ class AudioFileProcessor {
                 }
             }
             
-            return [outputURL]
+            return [finalOutputURL]
             
         } else {
             // Single file - just convert format if needed
@@ -227,19 +246,25 @@ class AudioFileProcessor {
             if inputFile.pathExtension.lowercased() == options.outputFormat.fileExtension {
                 // No conversion needed, just move/copy to destination
                 if options.preserveOriginals {
-                    try FileManager.default.copyItem(at: inputFile, to: outputURL)
+                    try FileManager.default.copyItem(at: inputFile, to: finalOutputURL)
                 } else {
-                    try FileManager.default.moveItem(at: inputFile, to: outputURL)
+                    try FileManager.default.moveItem(at: inputFile, to: finalOutputURL)
                 }
                 
                 logger.log("Moved \(inputFile.lastPathComponent) to destination (no conversion needed)")
             } else {
-                // Convert format
+                // Convert format to temp directory first
                 let duration = try await audioMerger.mergeAudioFiles(
                     inputFiles: [inputFile],
-                    outputURL: outputURL,
+                    outputURL: tempOutputURL,
                     outputFormat: options.outputFormat
                 )
+                
+                // Copy from temp to final destination, then remove temp file
+                logger.log("Copying converted file from \(tempOutputURL.path) to \(finalOutputURL.path)")
+                try FileManager.default.copyItem(at: tempOutputURL, to: finalOutputURL)
+                try FileManager.default.removeItem(at: tempOutputURL)
+                logger.log("Successfully saved converted file to: \(finalOutputURL.path)")
                 
                 logger.log("Converted \(inputFile.lastPathComponent) to \(options.outputFormat.fileExtension) (duration: \(String(format: "%.1f", duration))s)")
                 
@@ -249,7 +274,7 @@ class AudioFileProcessor {
                 }
             }
             
-            return [outputURL]
+            return [finalOutputURL]
         }
     }
     

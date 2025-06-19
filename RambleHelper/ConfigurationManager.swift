@@ -106,20 +106,12 @@ class ConfigurationManager: ObservableObject {
     }
     
     private func loadDestinationFolder() {
-        guard let bookmarkData = userDefaults.data(forKey: Keys.destinationFolderBookmark) else {
-            return
-        }
-        
-        do {
-            var isStale = false
-            let url = try URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale)
-            
-            if !isStale && FileManager.default.fileExists(atPath: url.path) {
+        // Simply load the stored path - no need for bookmarks without sandboxing
+        if let storedPath = userDefaults.string(forKey: Keys.destinationFolderBookmark) {
+            let url = URL(fileURLWithPath: storedPath)
+            if FileManager.default.fileExists(atPath: url.path) {
                 destinationFolderURL = url
-                _ = url.startAccessingSecurityScopedResource()
             }
-        } catch {
-            print("Failed to resolve bookmark: \(error)")
         }
     }
     
@@ -129,12 +121,8 @@ class ConfigurationManager: ObservableObject {
             return
         }
         
-        do {
-            let bookmarkData = try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
-            userDefaults.set(bookmarkData, forKey: Keys.destinationFolderBookmark)
-        } catch {
-            print("Failed to create bookmark: \(error)")
-        }
+        // Simply store the path - no need for bookmarks without sandboxing
+        userDefaults.set(url.path, forKey: Keys.destinationFolderBookmark)
     }
     
     func setDestinationFolder(url: URL) {
@@ -143,6 +131,16 @@ class ConfigurationManager: ObservableObject {
     
     var isConfigured: Bool {
         return destinationFolderURL != nil
+    }
+    
+    var isDestinationFolderAccessible: Bool {
+        guard let url = destinationFolderURL else { return false }
+        
+        // Simple check - just verify folder exists and is a directory
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
+        
+        return exists && isDirectory.boolValue
     }
     
     func addDeviceName(_ name: String) {

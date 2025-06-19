@@ -84,7 +84,9 @@ class Logger {
         let timestamp = dateFormatter.string(from: Date())
         let logEntry = "[\(timestamp)] [\(level.rawValue)] [\(fileName):\(line)] \(function) - \(message)"
         
-        os_log("%{public}@", log: osLog, type: level.osLogType, logEntry)
+        // Safely log to os_log with proper string handling
+        let safeMessage = String(message.prefix(1000)) // Limit message length to prevent decode errors
+        os_log("%{public}@", log: osLog, type: level.osLogType, "[\(level.rawValue)] [\(fileName):\(line)] \(function) - \(safeMessage)")
         
         logQueue.async { [weak self] in
             self?.writeToFile(logEntry)

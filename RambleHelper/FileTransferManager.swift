@@ -25,6 +25,7 @@ struct TransferResult {
 
 enum TransferError: Error, LocalizedError {
     case noDestinationFolder
+    case destinationNotAccessible
     case insufficientSpace(required: Int64, available: Int64)
     case fileNotFound(String)
     case permissionDenied(String)
@@ -35,6 +36,8 @@ enum TransferError: Error, LocalizedError {
         switch self {
         case .noDestinationFolder:
             return "No destination folder configured"
+        case .destinationNotAccessible:
+            return "Destination folder is not accessible or writable"
         case .insufficientSpace(let required, let available):
             return "Insufficient space: need \(ByteCountFormatter.string(fromByteCount: required, countStyle: .file)), have \(ByteCountFormatter.string(fromByteCount: available, countStyle: .file))"
         case .fileNotFound(let path):
@@ -54,6 +57,7 @@ class FileTransferManager {
     private let notificationManager: NotificationManager
     private let logger: Logger
     private let audioProcessor: AudioFileProcessor
+    private var backgroundActivity: NSObjectProtocol?
     
     private(set) var currentState: TransferState = .idle {
         didSet {
@@ -75,17 +79,44 @@ class FileTransferManager {
         }
     }
     
+    /// Begins background activity to prevent app suspension during processing
+    private func beginBackgroundActivity(reason: String) {
+        backgroundActivity = ProcessInfo.processInfo.beginActivity(
+            options: [.background, .latencyCritical],
+            reason: reason
+        )
+        logger.log("Background activity started: \(reason)")
+    }
+    
+    /// Ends background activity when processing is complete
+    private func endBackgroundActivity() {
+        if let activity = backgroundActivity {
+            ProcessInfo.processInfo.endActivity(activity)
+            backgroundActivity = nil
+            logger.log("Background activity ended")
+        }
+    }
+    
     func transferFiles(from sourceURL: URL) async throws -> TransferResult {
         currentState = .transferring
         logger.log("Starting file transfer from: \(sourceURL.path)")
         
+        // Begin background activity to prevent suspension during processing
+        beginBackgroundActivity(reason: "Audio file transfer and processing")
+        
         defer {
             currentState = .idle
+            endBackgroundActivity()
         }
         
         guard let destinationURL = configurationManager.destinationFolderURL else {
             logger.log("No destination folder configured", level: .error)
             throw TransferError.noDestinationFolder
+        }
+        
+        guard configurationManager.isDestinationFolderAccessible else {
+            logger.log("Destination folder is not accessible: \(destinationURL.path)", level: .error)
+            throw TransferError.destinationNotAccessible
         }
         
         let wavFiles = try findWAVFiles(in: sourceURL)
@@ -104,8 +135,9 @@ class FileTransferManager {
         
         try checkAvailableSpace(for: wavFiles, destination: destinationURL)
         
-        // Step 1: Transfer files to a temporary processing directory
-        let tempProcessingDir = destinationURL.appendingPathComponent(".ramble_processing_\(UUID().uuidString)")
+        // Step 1: Transfer files to a temporary processing directory (use system temp to avoid Dropbox permissions)
+        let systemTempDir = FileManager.default.temporaryDirectory
+        let tempProcessingDir = systemTempDir.appendingPathComponent("ramble_processing_\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempProcessingDir, withIntermediateDirectories: true)
         
         var transferredFiles: [URL] = []
@@ -148,6 +180,7 @@ class FileTransferManager {
                     preserveOriginals: false
                 )
                 
+                logger.log("Sending files to audio processor with destination: \(destinationURL.path)")
                 let processingResult = try await audioProcessor.processAudioFiles(
                     files: transferredFiles,
                     destinationFolder: destinationURL,
